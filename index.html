@@ -1,0 +1,71 @@
+<script>
+    var datags = <?!= JSON.stringify(data) ?>;
+    </script>
+    
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <base target="_top"><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    
+      </head>
+      <body>
+        <div id="output" class="container">
+         <form>
+           <div class="form-group">Your Email Address :
+             <input type="email" id ="email" class="form-control" value=""></div>
+           <div class="form-group">Select Content :
+             <select id="projects" class="form-control"></select></div>
+           <div class="form-group">
+             <input type="submit" id="submit" class="btn btn-primary btn-lg btn-block" value="Access Content">
+             </div>
+           <div id="message"></div>
+         </form>
+        </div>
+      
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        <script>
+          $(function(){
+            init();
+            $('form').submit(function(e){
+            e.preventDefault();
+            var myData = {};
+            myData['email'] = $('#email').val();
+            myData['project'] = $('#projects').val();    
+            google.script.run.withSuccessHandler(onResponse).eOutput(myData);
+            })
+          })
+          
+          function onResponse(e){
+            if(e.success){
+              $('#output').empty();
+              $('#output').append('<ul class="list-group"></ul>');
+              for(i=1;i<=(e.data.length -1);i++){
+              var listitem = "empty";
+              if(e.data[i][1] == 'h1'){listitem = '<h1>'+e.data[i][0]+'</h1>';}
+              if(e.data[i][1] == 'h2'){listitem = '<h2>'+e.data[i][0]+'</h2>';}
+              if(e.data[i][1] == 'text'){listitem = '<p>'+e.data[i][0]+'</p>';}
+              if(e.data[i][1] == 'link'){listitem = '<a href="'+e.data[i][2]+'" target="_blank" class="btn btn-outline-primary">'+e.data[i][0]+'</a>';}
+              if(e.data[i][1] == 'image'){listitem = '<img src="'+e.data[i][0]+'" alt="'+e.data[i][2]+'" >';}
+              $('.list-group').append('<li class="list-group-item">'+listitem+'</li>');
+              }
+            } else {
+              $('#message').append('<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>'+e.message+'</div>');
+            }
+          }
+          
+          function init(){
+            for(ii=0;ii<=(datags.content.length -1);ii++){
+              if(datags.content[ii]){$('#projects').append($('<option></option>').val(datags.content[ii]).html(datags.content[ii]));}
+            }
+            datags.home.reverse();
+            for(i=0;i<=(datags.home.length -1);i++){
+              if(datags.home[i][1] == 'h1'){$('#output').prepend('<h1><center>'+datags.home[i][0]+'</center></h1>');}
+              if(datags.home[i][1] == 'text'){$('#output').prepend('<p>'+datags.home[i][0]+'</p>');}
+              if(datags.home[i][1] == 'image'){$('#output').prepend('<img src="'+datags.home[i][0]+'" alt="image" >');}
+            }
+          }
+        </script>
+      </body>
+    </htm
